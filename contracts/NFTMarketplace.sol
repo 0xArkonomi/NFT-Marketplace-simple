@@ -8,7 +8,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract NFTMarketplace is ERC721URIStorage {
     uint256 private _tokenIdCounter;
-    address payable     owner;
+    uint256 private _itemsSolCounter;
+    address payable owner;
     
     constructor() ERC721("NFTMarketplace", "NFTM") {
         owner = payable(msg.sender);
