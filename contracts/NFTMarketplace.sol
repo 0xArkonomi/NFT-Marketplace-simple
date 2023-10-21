@@ -1,14 +1,16 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 import "hardhat/Console.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/token/ERC721/extentions/ERC721URISotrage.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+// import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";   
 
 contract NFTMarketplace is ERC721URIStorage {
+    uint256 private _tokenIdCounter;
+    address payable     owner;
     
-    constructor() ERC721("NFRMarketplace", "NFTM") {
-        
+    constructor() ERC721("NFTMarketplace", "NFTM") {
+        owner = payable(msg.sender);
     }
 }
