@@ -9,7 +9,9 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 contract NFTMarketplace is ERC721URIStorage {
     address payable owner;
     uint256 private _tokenIdCounter;
-    uint256 private _itemsSolCounter;
+    uint256 private _itemsSoldCounter++;
+    
+    _transfer();
     uint256 listPrice = 0.01 ether;
     
     constructor() ERC721("NFTMarketplace", "NFTM") {
@@ -64,16 +66,16 @@ contract NFTMarketplace is ERC721URIStorage {
         return _tokenIdCounter;
     }
 
-    function createListedToken(uint256 _tokenId, uint256 _price) private {
-        idToListedToken[_tokenId] = ListedToken {
-            _tokenId,
+    function createListedToken(uint256 tokenId, uint256 _price) private {
+        idToListedToken[tokenId] = ListedToken {
+            tokenId,
             _price,
             payable(address(this)),
             payable(msg.sender),
             true
         };
 
-        _transfer(address(this), msg.sender, _tokenId);
+        _transfer(msg.sender, address(this), tokenId);
     }
 
     function getAllNFTs() public view returns(ListedToken[] memory) {
@@ -110,5 +112,22 @@ contract NFTMarketplace is ERC721URIStorage {
                 currentIndex++;
             }
         return items;
+    }
+
+    function executeSale(uint256 tokenId) public payable {
+        uint price = idToListedToken[tokenId].price;
+        require(msg.value == price, "Please submit the asking price for the NFT in order to purchese");
+
+        address seller = idToListedToken[tokenId].seller;
+
+        idToListedToken[tokenId].currentlyListed = true;
+        idToListedToken[tokenId].seller = payable(msg.sender);
+        _itemsSoldCounter++;
+
+        _transfer(address(this), msg.sender, tokenId);
+        approbe(address(this), tokenId);
+
+        payable(owner).transfer(listPrice);
+        payable(seller).transfer(msg.value);
     }
 }
